@@ -2,9 +2,7 @@
 export default {
   methods: {
     async fetchData(url) {
-      const fileUrl = `${this.root}db/${url}`;
-
-      return fetch(fileUrl)
+      return fetch(url)
         .then((response) => {
           if (response.ok) {
             return response.json();
