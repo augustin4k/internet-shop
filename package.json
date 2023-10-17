@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "node express.js & npm run serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^1.5.1",
     "bootstrap": "^5.3.2",
     "bootstrap-vue-next": "^0.14.10",
     "core-js": "^3.8.3",
+    "cors": "^2.8.5",
     "vue": "^3.2.13"
   },
   "devDependencies": {
