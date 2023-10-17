@@ -21,6 +21,14 @@ After installing Node.js, you can install Vue.js globally by running the followi
 npm install -g @vue/cli
 ```
 
+### Installing Dependencies
+
+Before running the project, navigate to the project folder in your code editor or integrated development environment (IDE), and run the following command to install all project dependencies:
+
+```bash
+npm install
+```
+
 ## Running the Project
 
 To run the Food Internet Shop project, follow these steps:
@@ -33,11 +41,11 @@ To run the Food Internet Shop project, follow these steps:
 npm run start
 ```
 
-This command will start the development server. You can access the project in your web browser by navigating to `http://localhost:8000`.
+After running this command, you will receive information about where the server is currently running (information will be displayed in the terminal where have you run commands above). You can access the project in your web browser by navigating to the link from terminal (should be `http://localhost:8080`).
 
 **Russian:**
 
-# Food Internet Shop
+# Интернет-магазин продуктов
 
 ## Установка
 
@@ -58,9 +66,17 @@ This command will start the development server. You can access the project in yo
 npm install -g @vue/cli
 ```
 
+### Установка зависимостей
+
+Перед запуском проекта перейдите в папку проекта в своем редакторе кода или интегрированной среде разработки (IDE) и выполните следующую команду для установки всех зависимостей проекта:
+
+```bash
+npm install
+```
+
 ## Запуск Проекта
 
-Для запуска проекта "Food Internet Shop" выполните следующие действия:
+Для запуска проекта "Интернет-магазин продуктов" выполните следующие действия:
 
 1. Откройте свой выбранный редактор кода или интегрированную среду разработки (IDE).
 2. В терминале внутри вашей среды разработки перейдите в папку проекта.
@@ -70,4 +86,4 @@ npm install -g @vue/cli
 npm run start
 ```
 
-Эта команда запустит сервер разработки. Вы сможете получить доступ к проекту в веб-браузере, перейдя по адресу `http://localhost:8000`.
+После выполнения этой команды вы получите информацию о том, где в данный момент работает сервер (ифнормация будет в терминале где команды запустили). Вы сможете получить доступ к проекту в веб-браузере, перейдя по адресу написанным там (должен быть: `http://localhost:8080`).
