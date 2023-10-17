@@ -7,6 +7,22 @@ const port = 3000;
 // Use CORS middleware
 app.use(cors());
 
+// create with force private folder which is needed in future for running of the project
+const folderPath = 'private'; // Replace with the path to your folder
+// Check if the folder exists
+if (!fs.existsSync(folderPath)) {
+  // If it doesn't exist, create the folder
+  fs.mkdirSync(folderPath, { recursive: true }, (err) => {
+    if (err) {
+      console.error('Error creating folder:', err);
+    } else {
+      console.log('Folder created successfully.');
+    }
+  });
+} else {
+  console.log('Folder already exists.');
+}
+
 const pathToCart = 'private/cart.json';
 
 app.get('/checkAndCreateCartFile', (req, res) => {
