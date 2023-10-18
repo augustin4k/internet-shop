@@ -9,13 +9,13 @@
         <h2 class="m-0 text-warning font-weight-bold">{{ infoShop.stars }}</h2>
       </div>
       <div>
-        <h3 class="m-0 font-weight-bold text-muted">from {{ minPrice }} MDL - {{ infoShop.kitchen }}</h3>
+        <h3 class="m-0 font-weight-bold text-muted">from {{ infoShop.price }} MDL - {{ infoShop.kitchen }}</h3>
       </div>
     </div>
     <!-- A doua parte -->
     <!-- aceasta parte apare doar cand am selectat recent un shop -->
     <div class="d-flex justify-content-between gap-3">
-      <div class="btn-group btn-group-lg" role="group" aria-label="ByPriceSort">
+      <div class="btn-group btn-group" role="group" aria-label="ByPriceSort">
         <a class="btn" :class="[existProducs ?? `disabled`, clickedPriceButtonAsc ? `btn-dark` : `btn-outline-dark`]"
           href="#" role="button" @click="sortPriceItems('asc')">
           <i class="fas fa-triangle"></i> Price - asc
@@ -34,7 +34,6 @@ export default {
   name: "SortBar",
   props: {
     infoShop: Object,
-    minPrice: Number,
     existProducs: Boolean
   },
   data() {

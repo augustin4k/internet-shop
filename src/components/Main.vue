@@ -12,7 +12,9 @@
             <p>Блюда из любимого ресторана привезет <br />курьер в перчатках, маске и с
               антисептиком</p>
           </div>
-          <div class="d-flex justify-content-between mb-5">
+
+          <!-- sort bar for restaurant view mode -->
+          <div class="d-flex justify-content-between mb-3">
             <h1 class="display-4 mb-0">Restaurants</h1>
             <div class="w-50 d-flex gap-2 align-items-center justify-content-between">
               <div class="input-group input-group-lg">
@@ -22,12 +24,28 @@
                 <input v-model="searchInput" type="text" class="form-control" placeholder="Search restaurants..."
                   aria-label="delivery" aria-describedby="basic-addon1">
               </div>
-              <div class="btn-group btn-group-lg" role="group" aria-label="ByTimeSort">
-                <button :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', disableSortAsc ? 'btn-outline-dark' :
-                  'btn-dark']" @click="sortShops(true)" type="button" class="btn text-nowrap">Time -
+            </div>
+          </div>
+          <div class="mb-3 d-flex justify-content-end">
+            <div class="d-flex justify-content-between gap-2">
+              <div class="btn-group btn-group" role="group" aria-label="ByTimeSort">
+                <button :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !sortBarArrayRestaurants[0] ? 'btn-outline-dark' :
+                  'btn-dark']" @click="sortShops('time', true)" type="button" class="btn text-nowrap">Time -
                   asc</button>
-                <button @click="sortShops(false)" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !disableSortAsc ? 'btn-outline-dark' :
+                <button @click="sortShops('time', false)" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !sortBarArrayRestaurants[1] ? 'btn-outline-dark' :
                   'btn-dark']" type="button" class="btn text-nowrap">Time - desc</button>
+              </div>
+              <div class="btn-group btn-group" role="group" aria-label="ByPrice">
+                <button @click="sortShops('price', true)" class="btn" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !sortBarArrayRestaurants[2] ? 'btn-outline-dark' :
+                  'btn-dark']">Price - asc</button>
+                <button @click="sortShops('price', false)" class="btn" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !sortBarArrayRestaurants[3] ? 'btn-outline-dark' :
+                  'btn-dark']">Price - desc</button>
+              </div>
+              <div class="btn-group btn-group" role="group" aria-label="ByRating">
+                <button @click="sortShops('rating', true)" class="btn" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !sortBarArrayRestaurants[4] ? 'btn-outline-dark' :
+                  'btn-dark']">Rating - asc</button>
+                <button @click="sortShops('rating', false)" class="btn" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !sortBarArrayRestaurants[5] ? 'btn-outline-dark' :
+                  'btn-dark']">Rating - desc</button>
               </div>
             </div>
           </div>
@@ -35,12 +53,12 @@
 
         <!-- if we are in shop mode, then show bar for sorting of products -->
         <SortBar v-else @need-to-sort="sortItems" :info-shop="clickShop" :existProducs="menuItems && menuItems.length > 0"
-          :min-price="minPrice" @show-shop-list='showShopList' />
+          @show-shop-list='showShopList' />
         <!-- Bellow is the zone for showing of cards (shops or product cards) -->
         <div class="row" v-if="menuItems && menuItems.length > 0">
           <div class="col-4 d-flex align-items-stretch" v-for="( card, index ) in  menuItems " :key="index">
-            <ProductCard v-if="showShopInfo" :itemInfo="card" />
-            <ShopCard v-else @cart-updated="cartUpdated" @click='handleClickCard(card)' :itemInfo="card" />
+            <ProductCard v-if="showShopInfo" @cart-updated="cartUpdated" :itemInfo="card" />
+            <ShopCard v-else @click='handleClickCard(card)' :itemInfo="card" />
           </div>
         </div>
         <!-- if no items are shown, then show NO RESTAURANTS OR PRODUCTS CAN BE SHOWN -->
@@ -69,7 +87,7 @@ export default {
   },
   data() {
     return {
-      disableSortAsc: false,
+      sortBarArrayRestaurants: [true, false, false, false, false, false],
       searchInput: "",
       // variable where i will save 
       // information about shop, when i will click on any shop
@@ -87,6 +105,10 @@ export default {
     },
 
     //#region CASE is shop card opened
+    sortItems(data) {
+      this.sortProducts(data);
+    },
+
     sortProducts(data) {
       // We are sure that this method will be only called when a shop card is clicked.
       const toSort = data;
@@ -115,11 +137,21 @@ export default {
     },
     //#endregion
 
-    sortShops(data) {
+    sortShops(sortBy, data) {
       const toSort = data;
-      this.disableSortAsc = !data;
-      const saveBeforeSort = this.menuItems
-      this.menuItems = toSort ? saveBeforeSort.sort((a, b) => a.time_of_delivery - b.time_of_delivery) : saveBeforeSort.sort((a, b) => b.time_of_delivery - a.time_of_delivery);
+      const saveBeforeSort = this.menuItems;
+      this.sortBarArrayRestaurants.fill(false);
+
+      if (sortBy === 'time') {
+        this.sortBarArrayRestaurants[toSort ? 0 : 1] = true;
+        this.menuItems = saveBeforeSort.sort((a, b) => (toSort ? 1 : -1) * (a.time_of_delivery - b.time_of_delivery));
+      } else if (sortBy === 'price') {
+        this.sortBarArrayRestaurants[toSort ? 2 : 3] = true;
+        this.menuItems = saveBeforeSort.sort((a, b) => (toSort ? 1 : -1) * (a.price - b.price));
+      } else if (sortBy === 'rating') {
+        this.sortBarArrayRestaurants[toSort ? 4 : 5] = true;
+        this.menuItems = saveBeforeSort.sort((a, b) => (toSort ? 1 : -1) * (a.stars - b.stars));
+      }
     },
 
     handleClickCard(cardInfo) {
@@ -166,7 +198,8 @@ export default {
     },
   },
   mounted() {
-    this.sortShops(true);
+    // by default behaviour
+    this.sortShops('time', true);
   }
 };
 </script>
