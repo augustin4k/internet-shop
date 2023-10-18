@@ -12,12 +12,10 @@
 import TopHeader from './components/Header.vue'
 import MainPart from './components/Main.vue'
 import BottomFooter from './components/Footer.vue'
-import fetchData from "./mixins/fetchFunction.vue"
 import axios from "axios";
 
 export default {
   name: 'App',
-  mixins: [fetchData],
   components: {
     // HelloWorld
     TopHeader,

@@ -48,7 +48,6 @@
 import SortBar from './main/SortBar.vue'
 import ProductCard from './main/ProductCard.vue'
 import ShopCard from './main/ShopCard.vue'
-import fetchData from "../mixins/fetchFunction.vue"
 import axios from "axios";
 
 export default {
@@ -56,7 +55,6 @@ export default {
   props: {
     db: Object // used for saving initial state of db 
   },
-  mixins: [fetchData],
   components: {
     SortBar, ProductCard,
     ShopCard

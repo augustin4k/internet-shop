@@ -31,13 +31,11 @@
 
 <script>
 import OrderCart from "./main/OrderCart.vue";
-import fetchData from "../mixins/fetchFunction.vue";
 import axios from 'axios';
 
 export default {
   name: 'TopHeader',
   components: { OrderCart },
-  mixins: [fetchData],
   props: {
     cartUpdated: Boolean,
   },
