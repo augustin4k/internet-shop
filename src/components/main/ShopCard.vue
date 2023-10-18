@@ -1,25 +1,18 @@
 <template>
-  <div class="card mb-4 w-100 d-flex flex-column" :class="itemInfo.id != null ? '' : 'bg-secondary text-white'">
+  <div class="card mb-4 w-100 d-flex flex-column bg-secondary text-white">
     <img :src="`${root}${itemInfo.image}`" class="card-img-top rounded" alt="imagePhoto">
     <div class="card-body d-flex flex-column flex-fill">
-      <h5 class="card-title">{{ itemInfo.name }}</h5>
-      <p class="card-text" :class="itemInfo.id != null ? 'text-muted' : ''">
-        {{ itemInfo.description }}
+      <h5 class="card-title d-flex justify-content-between">{{ itemInfo.name }}
+        <button class="disabled btn btn-sm btn-dark">
+          <i class="fa-solid fa-circle-info"></i>
+          {{ itemInfo.time_of_delivery }} min</button>
+      </h5>
+      <p class="card-text">
+        from {{ itemInfo.price }} MDL - {{ itemInfo.kitchen }}
       </p>
     </div>
-    <div class="card-footer d-flex justify-content-between mt-auto">
-      <a v-if='itemInfo.id != null' @click="updateCartDb(itemInfo)" class="btn btn-sm btn-primary btn-block">
-        <i class="fa-solid fa-cart-shopping"></i>
-        Add in cart
-      </a>
-      <a v-else class="btn btn-sm btn-outline-light disabled btn-block">
-        <i class="fa-solid fa-circle-info"></i>
-        {{ itemInfo.time_of_delivery }} min
-      </a>
-      <a v-if='itemInfo.id != null' class="btn btn-sm btn-block btn-outline-secondary disabled">
-        {{ itemInfo.price }} MDL
-      </a>
-      <a v-else class="btn btn-sm btn-block btn-outline-warning disabled">
+    <div class="card-footer d-flex justify-content-end mt-auto">
+      <a class="btn btn-sm btn-block btn-outline-warning disabled">
         <i class="fa-solid fa-star"></i>
         {{ itemInfo.stars }}
       </a>

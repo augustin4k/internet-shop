@@ -10,8 +10,8 @@
             <span class="input-group-text bg-white" id="basic-addon1">
               <i class="fa-solid fa-house"></i>
             </span>
-            <input v-model="searchInput" @input="updateFluxData" type="text" class="form-control"
-              placeholder="Search delivery address..." aria-label="delivery" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" placeholder="Search delivery address..." aria-label="delivery"
+              aria-describedby="basic-addon1">
           </div>
           <div class="btn-group">
             <!-- Button trigger modal -->
@@ -40,17 +40,25 @@ export default {
   mixins: [fetchData],
   props: {
     cartUpdated: Boolean,
-
-    db: Object // used for saving initial state of db
   },
   data() {
     return {
       cartItems: [],
-      searchInput: "",
-      searchResults: [],
     };
   },
   methods: {
+    // lets create a db file for cart, if it's not created yet
+    checkAndCreateFile() {
+      axios.get('http://localhost:3000/checkAndCreateCartFile')
+        .then(response => {
+          console.log(response.data.message);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+
+    // getting all cart's products
     getCartProducts() {
       // Make a GET request to the Express route
       axios.get('http://localhost:3000/getOrderCartProducts')
@@ -62,47 +70,9 @@ export default {
           console.error('Error:', error);
         });
     },
-    updateFluxData() {
-      // Emit a custom event named 'child-event' with optional data
-      this.searchResults = this.search();
-      this.$emit('update-flux-data', this.searchResults);
-    },
-    search() {
-      const query = this.searchInput.toLowerCase();
-      const results = [];
-      if (query && query.length > 0) {
-        // Search in the "partners" key
-        if (this.db.partners) {
-          const partners = this.db.partners.filter((partner) => partner.name.toLowerCase().includes(query));
-          results.push(...partners);
-        }
-        // Search in other keys
-        for (const key in this.db) {
-          if (key !== "partners") {
-            const items = this.db[key].filter((item) => {
-              return (item.name.toLowerCase().includes(query) ||
-                (item.description && item.description.toLowerCase().includes(query)));
-            });
-            results.push(...items);
-          }
-        }
-        return results;
-      }
-      else {
-        return Object.values(this.db).reduce((acc, current) => { return acc.concat(current); }, []);
-      }
-    },
-    checkAndCreateFile() {
-      axios.get('http://localhost:3000/checkAndCreateCartFile')
-        .then(response => {
-          console.log(response.data.message);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    },
   },
   watch: {
+    // will send information that file has been updated already
     cartUpdated: {
       handler() {
         this.getCartProducts();
@@ -111,7 +81,9 @@ export default {
     }
   },
   mounted() {
+    // create a db cart file first of all
     this.checkAndCreateFile();
+    // get products, if in this this there are some products
     this.getCartProducts();
   }
 };

@@ -3,7 +3,8 @@
     <div class="album py-5 bg-light">
       <div class="container">
 
-        <div v-if='emptyClickShop' class="d-flex flex-column mb-3">
+        <!-- Handling with sections between header and cards zone -->
+        <div v-if='!showShopInfo' class="d-flex flex-column mb-3">
           <div class="d-flex flex-column p-5 promo mb-5" name="previewShop">
             <h1 class="display-4 font-weight-bold mb-5">Онлайн-сервис <br />
               доставки еды на дом
@@ -18,21 +19,23 @@
                 <span class="input-group-text bg-white" id="basic-addon1">
                   <i class="fa-solid fa-shop"></i>
                 </span>
-                <input v-model="searchInput" @input="updateFluxData" type="text" class="form-control"
-                  placeholder="Search restaurants..." aria-label="delivery" aria-describedby="basic-addon1">
+                <input v-model="searchInput" type="text" class="form-control" placeholder="Search restaurants..."
+                  aria-label="delivery" aria-describedby="basic-addon1">
               </div>
             </div>
           </div>
         </div>
-
-        <SortBar v-else-if="!emptyClickShop" @need-to-sort="sortItems" :info-shop="clickShop"
-          :existProducs="menuItems && menuItems.length > 0" :min-price="minPrice"
-          @reset-click-shop='resetEmptyShopFlag' />
+        <!-- if we are in shop mode, then show bar for sorting of products -->
+        <SortBar v-else @need-to-sort="sortItems" :info-shop="clickShop" :existProducs="menuItems && menuItems.length > 0"
+          :min-price="minPrice" @show-shop-list='showShopList' />
+        <!-- Bellow is the zone for showing of cards (shops or product cards) -->
         <div class="row" v-if="menuItems && menuItems.length > 0">
           <div class="col-4 d-flex align-items-stretch" v-for="(card, index) in menuItems" :key="index">
-            <ProductCard @cart-updated="cartUpdated" @click='handleClickCard(card)' :itemInfo="card" />
+            <ProductCard v-if="showShopInfo" :itemInfo="card" />
+            <ShopCard v-else @cart-updated="cartUpdated" @click='handleClickCard(card)' :itemInfo="card" />
           </div>
         </div>
+        <!-- if no items are shown, then show NO RESTAURANTS OR PRODUCTS CAN BE SHOWN -->
         <div v-else class="alert alert-light text-center" role="alert">
           Restaurants, products or description not found :(
         </div>
@@ -44,76 +47,108 @@
 <script>
 import SortBar from './main/SortBar.vue'
 import ProductCard from './main/ProductCard.vue'
+import ShopCard from './main/ShopCard.vue'
 import fetchData from "../mixins/fetchFunction.vue"
+import axios from "axios";
 
 export default {
   name: 'MainPart',
-  props: { fluxData: Array },
+  props: {
+    db: Object // used for saving initial state of db 
+  },
   mixins: [fetchData],
   components: {
     SortBar, ProductCard,
+    ShopCard
   },
   data() {
     return {
+      searchInput: "",
       // variable where i will save 
       // information about shop, when i will click on any shop
       clickShop: {},
       root: process.env.BASE_URL,
-      menuItems: [],
+      menuItems: this.db, // here will be saved actual list of items which should be rendered
+      searchResults: this.db, // here will be saved flux items based on searching
       saveBeforeSort: [],
     };
   },
   methods: {
     cartUpdated() {
+      // for sending information between components
       this.$emit('cart-updated');
     },
+
+    //#region CASE is shop card opened
     sortItems(data) {
       // We are sure that this method will be only called when a shop card is clicked.
       const toSort = data;
 
       // Once we have a shop card, our items are an array of products that can be sorted.
-      const saveBeforeSort = this.saveBeforeSort;
+      const saveBeforeSort = this.menuItems
 
       // Use a conditional (ternary) operator to sort in ascending or descending order based on the 'toSort' variable.
       this.menuItems = toSort ? saveBeforeSort.sort((a, b) => a.price - b.price) : saveBeforeSort.sort((a, b) => b.price - a.price);
     },
-    resetEmptyShopFlag() {
-      this.clickShop = {};
-      this.menuItems = this.fluxData;
-    },
-    handleClickCard(cardInfo) {
-      // is shop only when cardInfo doesn't have id
-      if (cardInfo.id == null) {
-        this.clickShop = cardInfo;
-        this.fetchData(`${this.root}db/${this.clickShop.products}`).then((data) => {
-          // get products from the shop
-          this.menuItems = data;
-          this.saveBeforeSort = data;
-          this.sortItems(true);
+
+    searchShops(string) {
+      axios.get('http://localhost:3000/findShops', { params: { searchString: string } })
+        .then(response => {
+          this.menuItems = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+          this.menuItems = [];
         });
-      }
+    },
+    // trigger to show shops 
+    showShopList() {
+      this.clickShop = {};
+      this.menuItems = this.searchResults;
+    },
+    //#endregion
+
+    handleClickCard(cardInfo) {
+      // if we clicked on shop, lets say this to the variable
+      // which respond for next rendering of ui based on this clicking
+      this.clickShop = cardInfo;
+      axios.get('http://localhost:3000/getProducts', { params: { link: cardInfo.products } })
+        .then(response => {
+          this.menuItems = response.data;
+          this.sortItems(true);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
 
   },
-  computed: {
-    emptyClickShop() {
-      return Object.keys(this.clickShop).length === 0;
-    },
-    minPrice() {
-      if (this.menuItems.length > 0) {
-        return Math.min(...this.menuItems.map(product => product.price));
-      }
-      return 0; // Return a default value if there are no menu items.
-    },
-  },
   watch: {
-    // Watch for changes in menuItems and update minPrice
-    fluxData: {
-      handler(newVal) {
-        this.clickShop = {};
-        this.menuItems = newVal;
-      },
+    db: {
+      // i added this watch, because for some reason
+      // at first init of application, db gotten from props is empty
+      // any way, we know that db should be changed only once
+      // so we can set here to enforce attribution of db to menuItems and searchResults
       deep: true,
+      handler(newVal) {
+        this.menuItems = newVal;
+        this.searchResults = newVal;
+      }
+    },
+    searchInput: {
+      handler(newVal) {
+        if (newVal.length === 0) {
+          this.menuItems = this.db;
+        }
+        else {
+          this.searchShops(newVal);
+        }
+      }
+    }
+  },
+  computed: {
+    showShopInfo() {
+      return Object.keys(this.clickShop).length > 0;
     },
   },
 };
