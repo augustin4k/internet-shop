@@ -5,7 +5,7 @@
 
         <!-- Handling with sections between header and cards zone -->
         <div v-if='!showShopInfo' class="d-flex flex-column mb-3">
-          <div class="d-flex flex-column p-5 promo mb-5" name="previewShop">
+          <div class="d-flex flex-column p-5 rounded promo mb-5" name="previewShop">
             <h1 class="display-4 font-weight-bold mb-5">Онлайн-сервис <br />
               доставки еды на дом
             </h1>
@@ -36,8 +36,8 @@
           </div>
         </div>
         <!-- if no items are shown, then show NO RESTAURANTS OR PRODUCTS CAN BE SHOWN -->
-        <div v-else class="alert alert-light text-center" role="alert">
-          Restaurants, products or description not found :(
+        <div v-else class="alert alert-warning text-center" role="alert">
+          Restaurants according your searching haven't been found <i class="fa-solid fa-face-sad-tear"></i>
         </div>
       </div>
     </div>
@@ -155,7 +155,6 @@ export default {
 <style>
 .promo {
   background: #fff1b8 url(../../public/img/promo/pizza.png) no-repeat top -100px right -250px / 830px;
-  ;
 }
 
 .promo h1 {
