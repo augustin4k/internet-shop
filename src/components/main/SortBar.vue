@@ -15,14 +15,16 @@
     <!-- A doua parte -->
     <!-- aceasta parte apare doar cand am selectat recent un shop -->
     <div class="d-flex justify-content-between gap-3">
-      <a class="btn" :class="[existProducs ?? `disabled`, clickedPriceButtonAsc ? `btn-dark` : `btn-outline-dark`]"
-        href="#" role="button" @click="sortPriceItems('asc')">
-        <i class="fas fa-triangle"></i> Price - asc
-      </a>
-      <a class="btn" :class="[existProducs ?? `disabled`, clickedPriceButtonDesc ? `btn-dark` : `btn-outline-dark`]"
-        href="#" role="button" @click="sortPriceItems('desc')">
-        <i class="fas fa-triangle"></i> Price - desc
-      </a>
+      <div class="btn-group btn-group-lg" role="group" aria-label="ByPriceSort">
+        <a class="btn" :class="[existProducs ?? `disabled`, clickedPriceButtonAsc ? `btn-dark` : `btn-outline-dark`]"
+          href="#" role="button" @click="sortPriceItems('asc')">
+          <i class="fas fa-triangle"></i> Price - asc
+        </a>
+        <a class="btn" :class="[existProducs ?? `disabled`, clickedPriceButtonDesc ? `btn-dark` : `btn-outline-dark`]"
+          href="#" role="button" @click="sortPriceItems('desc')">
+          <i class="fas fa-triangle"></i> Price - desc
+        </a>
+      </div>
     </div>
   </div>
 </template>

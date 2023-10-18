@@ -14,7 +14,7 @@
           </div>
           <div class="d-flex justify-content-between mb-5">
             <h1 class="display-4 mb-0">Restaurants</h1>
-            <div class="w-50 d-flex align-items-center">
+            <div class="w-50 d-flex gap-2 align-items-center justify-content-between">
               <div class="input-group input-group-lg">
                 <span class="input-group-text bg-white" id="basic-addon1">
                   <i class="fa-solid fa-shop"></i>
@@ -22,15 +22,23 @@
                 <input v-model="searchInput" type="text" class="form-control" placeholder="Search restaurants..."
                   aria-label="delivery" aria-describedby="basic-addon1">
               </div>
+              <div class="btn-group btn-group-lg" role="group" aria-label="ByTimeSort">
+                <button :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', disableSortAsc ? 'btn-outline-dark' :
+                  'btn-dark']" @click="sortShops(true)" type="button" class="btn text-nowrap">Time -
+                  asc</button>
+                <button @click="sortShops(false)" :class="[menuItems && menuItems.length === 0 ? 'disabled' : '', !disableSortAsc ? 'btn-outline-dark' :
+                  'btn-dark']" type="button" class="btn text-nowrap">Time - desc</button>
+              </div>
             </div>
           </div>
         </div>
+
         <!-- if we are in shop mode, then show bar for sorting of products -->
         <SortBar v-else @need-to-sort="sortItems" :info-shop="clickShop" :existProducs="menuItems && menuItems.length > 0"
           :min-price="minPrice" @show-shop-list='showShopList' />
         <!-- Bellow is the zone for showing of cards (shops or product cards) -->
         <div class="row" v-if="menuItems && menuItems.length > 0">
-          <div class="col-4 d-flex align-items-stretch" v-for="(card, index) in menuItems" :key="index">
+          <div class="col-4 d-flex align-items-stretch" v-for="( card, index ) in  menuItems " :key="index">
             <ProductCard v-if="showShopInfo" :itemInfo="card" />
             <ShopCard v-else @cart-updated="cartUpdated" @click='handleClickCard(card)' :itemInfo="card" />
           </div>
@@ -61,6 +69,7 @@ export default {
   },
   data() {
     return {
+      disableSortAsc: false,
       searchInput: "",
       // variable where i will save 
       // information about shop, when i will click on any shop
@@ -78,7 +87,7 @@ export default {
     },
 
     //#region CASE is shop card opened
-    sortItems(data) {
+    sortProducts(data) {
       // We are sure that this method will be only called when a shop card is clicked.
       const toSort = data;
 
@@ -106,6 +115,13 @@ export default {
     },
     //#endregion
 
+    sortShops(data) {
+      const toSort = data;
+      this.disableSortAsc = !data;
+      const saveBeforeSort = this.menuItems
+      this.menuItems = toSort ? saveBeforeSort.sort((a, b) => a.time_of_delivery - b.time_of_delivery) : saveBeforeSort.sort((a, b) => b.time_of_delivery - a.time_of_delivery);
+    },
+
     handleClickCard(cardInfo) {
       // if we clicked on shop, lets say this to the variable
       // which respond for next rendering of ui based on this clicking
@@ -113,7 +129,7 @@ export default {
       axios.get('http://localhost:3000/getProducts', { params: { link: cardInfo.products } })
         .then(response => {
           this.menuItems = response.data;
-          this.sortItems(true);
+          this.sortProducts(true);
         })
         .catch(error => {
           console.error(error);
@@ -142,13 +158,16 @@ export default {
           this.searchShops(newVal);
         }
       }
-    }
+    },
   },
   computed: {
     showShopInfo() {
       return Object.keys(this.clickShop).length > 0;
     },
   },
+  mounted() {
+    this.sortShops(true);
+  }
 };
 </script>
 
