@@ -1,6 +1,6 @@
 <template>
   <header class="navbar navbar-expand bg-body-tertiary">
-    <div class="container-fluid">
+    <div class="container">
       <div class="w-100">
         <div class='d-flex justify-content-between align-items-center'>
           <a class="navbar-brand m-0" href="#">
@@ -8,10 +8,10 @@
           </a>
           <div class="input-group w-50">
             <span class="input-group-text bg-white" id="basic-addon1">
-              <i class="fa-solid fa-shop"></i>
+              <i class="fa-solid fa-house"></i>
             </span>
             <input v-model="searchInput" @input="updateFluxData" type="text" class="form-control"
-              placeholder="Search restaurants, products..." aria-label="delivery" aria-describedby="basic-addon1">
+              placeholder="Search delivery address..." aria-label="delivery" aria-describedby="basic-addon1">
           </div>
           <div class="btn-group">
             <!-- Button trigger modal -->
@@ -40,8 +40,8 @@ export default {
   mixins: [fetchData],
   props: {
     cartUpdated: Boolean,
-    // used for saving initial state of db
-    db: Object
+
+    db: Object // used for saving initial state of db
   },
   data() {
     return {

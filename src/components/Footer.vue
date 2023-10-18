@@ -1,7 +1,7 @@
 <template>
   <footer class="text-center text-muted bg-white">
     <!-- Grid container -->
-    <div class="container-fluid pt-4">
+    <div class="container pt-4">
       <!-- Section: Social media -->
       <section class="mb-4">
         <!-- Facebook -->

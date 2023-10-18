@@ -1,8 +1,31 @@
 <template>
   <div id="mainPart">
     <div class="album py-5 bg-light">
-      <div class="container-fluid">
-        <SortBar v-if="!emptyClickShop" @need-to-sort="sortItems" :info-shop="clickShop"
+      <div class="container">
+
+        <div v-if='emptyClickShop' class="d-flex flex-column mb-3">
+          <div class="d-flex flex-column p-5 promo mb-5" name="previewShop">
+            <h1 class="display-4 font-weight-bold mb-5">Онлайн-сервис <br />
+              доставки еды на дом
+            </h1>
+            <p>Блюда из любимого ресторана привезет <br />курьер в перчатках, маске и с
+              антисептиком</p>
+          </div>
+          <div class="d-flex justify-content-between mb-5">
+            <h1 class="display-4 mb-0">Restaurants</h1>
+            <div class="w-50 d-flex align-items-center">
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-white" id="basic-addon1">
+                  <i class="fa-solid fa-shop"></i>
+                </span>
+                <input v-model="searchInput" @input="updateFluxData" type="text" class="form-control"
+                  placeholder="Search restaurants..." aria-label="delivery" aria-describedby="basic-addon1">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <SortBar v-else-if="!emptyClickShop" @need-to-sort="sortItems" :info-shop="clickShop"
           :existProducs="menuItems && menuItems.length > 0" :min-price="minPrice"
           @reset-click-shop='resetEmptyShopFlag' />
         <div class="row" v-if="menuItems && menuItems.length > 0">
@@ -96,4 +119,18 @@ export default {
 };
 </script>
 
+<style>
+.promo {
+  background: #fff1b8 url(../../public/img/promo/pizza.png) no-repeat top -100px right -250px / 830px;
+  ;
+}
 
+.promo h1 {
+  font-weight: bold;
+}
+
+.promo p {
+  font-size: 2rem;
+  font-weight: lighter;
+}
+</style>
