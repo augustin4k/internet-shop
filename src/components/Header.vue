@@ -16,12 +16,12 @@
           <div class="btn-group">
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalShopCart"
-              :class="cartItems.length === 0 ? 'disabled': ''">
+              :class="cartItems.length === 0 ? 'disabled' : ''">
               <i class="fa-solid fa-cart-shopping"></i>
               Cart
               <span class="badge">{{ cartItems.length }}</span>
             </button>
-            <OrderCart @cart-updated=" getCartProducts " :cart-items=" cartItems " />
+            <OrderCart @cart-updated="getCartProducts" :cart-items="cartItems" />
           </div>
         </div>
       </div>
@@ -53,11 +53,9 @@ export default {
   methods: {
     getCartProducts() {
       // Make a GET request to the Express route
-      axios.get('http://localhost:3000/getOrderCartProducts') // Replace with your server URL
+      axios.get('http://localhost:3000/getOrderCartProducts')
         .then(response => {
           // Handle the response data here
-          console.log(response.data);
-          // You can set the data to a local variable in your component
           this.cartItems = response.data;
         })
         .catch(error => {

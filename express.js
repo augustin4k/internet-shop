@@ -8,7 +8,7 @@ const port = 3000;
 app.use(cors());
 
 // create with force private folder which is needed in future for running of the project
-const folderPath = 'private'; // Replace with the path to your folder
+const folderPath = 'private';
 // Check if the folder exists
 if (!fs.existsSync(folderPath)) {
   // If it doesn't exist, create the folder
@@ -81,7 +81,6 @@ app.get('/modifyCart', (req, res) => {
 app.get('/getOrderCartProducts', (req, res) => {
   try {
     const data = JSON.parse(fs.readFileSync(pathToCart, 'utf-8'));
-    // Assuming your JSON data file is named 'yourdata.json'
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Error reading the data file' });
