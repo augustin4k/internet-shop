@@ -54,7 +54,7 @@ export default {
       this.$emit('need-to-sort', this.clickedPriceButtonAsc);
     },
     backToSearch() {
-      this.$emit('reset-click-shop');
+      this.$emit('show-shop-list');
     }
   },
 }

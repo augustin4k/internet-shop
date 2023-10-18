@@ -7,6 +7,7 @@ const port = 3000;
 // Use CORS middleware
 app.use(cors());
 
+//#region FOR HANDLING CART DATABASE
 // create with force private folder which is needed in future for running of the project
 const folderPath = 'private';
 // Check if the folder exists
@@ -86,6 +87,114 @@ app.get('/getOrderCartProducts', (req, res) => {
     res.status(500).json({ error: 'Error reading the data file' });
   }
 });
+//#endregion
+
+//#region HANDLING OF DATABASE REGARDING PRODUCTS AND SHOPS
+// Define a route to read data from the JSON file
+const pathDb = 'private/db/db.json';
+app.get('/getShops', (req, res) => {
+  try {
+    // Read the JSON file
+    const jsonData = JSON.parse(fs.readFileSync(pathDb, 'utf-8')).db;
+
+    // Check if the "partners" key exists
+    if ('partners' in jsonData) {
+      const { partners } = jsonData;
+
+      // Iterate through each partner and calculate the minimal price
+      for (const partner of partners) {
+        const partnerProducts = JSON.parse(
+          fs.readFileSync(`private/db/${partner.products}`, 'utf-8')
+        );
+        let minPrice = Infinity;
+        for (const product of partnerProducts) {
+          if (product.price < minPrice) {
+            minPrice = product.price;
+          }
+        }
+        partner.price = minPrice;
+      }
+
+      const shops = partners;
+
+      res.json(shops);
+    } else {
+      res
+        .status(400)
+        .json({ error: 'File does not contain a "partners" key.' });
+    }
+  } catch (error) {
+    console.error(`Error reading and organizing data: ${error.message}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/findShops', (req, res) => {
+  const searchString = req.query.searchString.toLocaleLowerCase(); // The string to search for
+
+  try {
+    // Read the JSON file
+    const jsonData = JSON.parse(fs.readFileSync(pathDb, 'utf-8')).db;
+
+    if ('partners' in jsonData) {
+      const { partners } = jsonData;
+
+      // Create an array to store found shops
+      const foundShops = [];
+
+      // Iterate through each partner and check for a match
+      for (const partner of partners) {
+        if (partner.name && partner.name.toLowerCase().includes(searchString)) {
+          foundShops.push(partner);
+          continue;
+        }
+
+        // Check if there's a products key and associated link
+        if (partner.products) {
+          const partnerProducts = JSON.parse(
+            fs.readFileSync(`private/db/${partner.products}`, 'utf-8')
+          );
+          for (const product of partnerProducts) {
+            if (
+              (product.description &&
+                product.description.toLowerCase().includes(searchString)) ||
+              (product.name &&
+                product.name.toLowerCase().includes(searchString))
+            ) {
+              // If the product matches, add the shop to the found shops
+              foundShops.push(partner);
+              break; // Stop searching for this shop once a match is found
+            }
+          }
+        }
+      }
+
+      res.json(foundShops);
+    } else {
+      res
+        .status(400)
+        .json({ error: 'File does not contain a "partners" key.' });
+    }
+  } catch (error) {
+    console.error(`Error searching for shops: ${error.message}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/getProducts', (req, res) => {
+  const linkToProducts = `private/db/${req.query.link}`; // The string to search for
+
+  try {
+    // Read the JSON file
+    const jsonData = JSON.parse(fs.readFileSync(linkToProducts, 'utf-8'));
+    res.json(jsonData);
+  } catch (error) {
+    console.error(`Error searching for shops: ${error.message}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//#endregion
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

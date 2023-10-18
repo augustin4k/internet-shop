@@ -1,19 +1,21 @@
 <template>
-  <div class="card mb-4 w-100 d-flex flex-column">
+  <div class="card mb-4 w-100 d-flex flex-column bg-secondary text-white">
     <img :src="`${root}${itemInfo.image}`" class="card-img-top rounded" alt="imagePhoto">
     <div class="card-body d-flex flex-column flex-fill">
-      <h5 class="card-title">{{ itemInfo.name }} </h5>
+      <h5 class="card-title d-flex">{{ itemInfo.name }}
+
+      </h5>
       <p class="card-text">
-        {{ itemInfo.description }}
+        from {{ itemInfo.price }} MDL - {{ itemInfo.kitchen }}
       </p>
     </div>
-    <div class=" card-footer d-flex justify-content-between mt-auto">
-      <a @click="updateCartDb(itemInfo)" class="btn btn-sm btn-primary btn-block">
-        <i class="fa-solid fa-cart-shopping"></i>
-        Add in cart
-      </a>
-      <a class="btn btn-sm btn-block btn-outline-secondary disabled">
-        {{ itemInfo.price }} MDL
+    <div class="card-footer d-flex justify-content-between mt-auto">
+      <button class="disabled btn btn-sm btn-dark">
+        <i class="fa-solid fa-circle-info"></i>
+        {{ itemInfo.time_of_delivery }} min</button>
+      <a class="btn btn-sm btn-block btn-outline-warning disabled">
+        <i class="fa-solid fa-star"></i>
+        {{ itemInfo.stars }}
       </a>
     </div>
   </div>

@@ -2,9 +2,8 @@
   <!-- default example at init of vue project -->
   <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-  <TopHeader @cart-updated="cartUpdatedFlag = false" :cart-updated="cartUpdatedFlag" :db='dataSave'
-    @update-flux-data="updateFluxData" />
-  <MainPart @cart-updated="cartUpdated" :flux-data="flattenedData" />
+  <TopHeader @cart-updated="cartUpdatedFlag = false" :cart-updated="cartUpdatedFlag" />
+  <MainPart @cart-updated="cartUpdated" :db='dataSave' />
   <BottomFooter />
 </template>
 
@@ -13,11 +12,10 @@
 import TopHeader from './components/Header.vue'
 import MainPart from './components/Main.vue'
 import BottomFooter from './components/Footer.vue'
-import fetchData from "./mixins/fetchFunction.vue"
+import axios from "axios";
 
 export default {
   name: 'App',
-  mixins: [fetchData],
   components: {
     // HelloWorld
     TopHeader,
@@ -26,8 +24,7 @@ export default {
   },
   data() {
     return {
-      fluxData: {}, // data which will be changed some time
-      dataSave: {}, // original db will be saved here
+      dataSave: [], // original db will be saved here
       countingUpdating: 0,
       cartUpdatedFlag: false,
     };
@@ -36,52 +33,18 @@ export default {
     cartUpdated() {
       this.cartUpdatedFlag = true;
     },
-    updateFluxData(data) {
-      // get new flux data
-      this.fluxData = data;
-    }
   },
-  watch: {
-    // for some reason at mounting data is null
-    // im going to count changing of this.fluxData
-    // and to save stable data at first changing
-    fluxData: {
-      handler(newVal) {
-        this.countingUpdating++;
-        if (this.countingUpdating === 1) {
-          this.dataSave = newVal;
-        }
-      },
-      deep: true,
-    },
+  mounted() {
+    // lets get all information about shop and products database
+    // once we dont have any CRUD actions in our products, we can get this information only once
+    axios.get('http://localhost:3000/getShops')
+      .then(response => {
+        this.dataSave = response.data;
+      })
+      .catch(error => {
+        console.error(error);
+      });
   },
-  computed: {
-    flattenedData() {
-      const data = this.fluxData; // Data cu structura actuală
-
-      // Verificăm dacă există cheia "partners" și, dacă da, aplicăm transformarea
-      if (data.partners) {
-        data.partners.forEach((partner) => {
-          // Adăugăm cheia "description" cu textul dorit
-          partner.description = `${partner.name} offers ${partner.kitchen}.`;
-        });
-      }
-
-      // Transformăm datele într-un array
-      const flattenedArray = Object.values(data).reduce((acc, current) => { return acc.concat(current) }, []);
-      return flattenedArray;
-    },
-  },
-
-  async mounted() {
-    try {
-      const data = await this.fetchData(`${process.env.BASE_URL}db/db.json`);
-      this.fluxDataSave = data.db;
-      this.fluxData = this.fluxDataSave;
-    } catch (error) {
-      console.log(error);
-    }
-  }
 }
 </script>
 
